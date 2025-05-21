@@ -1,9 +1,0 @@
-@startuml
-title View Review
-Tenant -> ReviewPage: openReviewPage()
-ReviewPage -> ReviewController: getReviewPage(Tenant_data)
-ReviewController -> ReviewModel: reviewPageGet(Tenant_data)
-ReviewController <-- ReviewModel: review_data
-ReviewPage <-- ReviewController: review_data
-Tenant <-- ReviewPage: displayReviewPage(review_data)
-@enduml

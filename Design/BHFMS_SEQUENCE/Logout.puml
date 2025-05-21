@@ -1,8 +1,0 @@
-@startuml
-title Logout
-User -> HomePage: clickLogoutButton()
-HomePage -> AuthController: logout()
-HomePage <-- AuthController: success_logout
-User <-- HomePage: displayHomePage()
-
-@enduml

@@ -1,9 +1,0 @@
-@startuml
-title View Boarding House Detail
-|User|
-    :Select boarding house from view all boarding house;
-    
-|System|
-    :Show selected boarding house detail;
-    stop
-@enduml
