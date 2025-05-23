@@ -12,7 +12,10 @@ WORKDIR /app
 COPY . .
 
 RUN composer install
-RUN cp .env.example .env && php artisan key:generate
+
+RUN cp .env.example .env && \
+    php artisan key:generate && \
+    php artisan storage:link
 
 WORKDIR /app
 RUN npm install && npm run build
