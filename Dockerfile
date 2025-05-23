@@ -14,7 +14,7 @@ COPY . .
 RUN composer install
 RUN cp .env.example .env && php artisan key:generate
 
-WORKDIR /app/resources/js
+WORKDIR /app
 RUN npm install && npm run build
 
 EXPOSE 8001
