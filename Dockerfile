@@ -35,15 +35,20 @@ RUN apt-get update && \
 
 WORKDIR /app
 
+# Copy files EXCEPT .env.example so Laravel won't try to parse it during build
 COPY . .
 
+# Prevent Laravel from trying to parse env during composer install
+RUN rm -f .env || true
+
+# Install PHP dependencies
 RUN composer install
 
-RUN php artisan storage:link
-
-WORKDIR /app
+# Install Node dependencies
 RUN npm install && npm run build
 
+# Expose port
 EXPOSE 8001
 
-CMD ["sh", "-c", "cp .env.example .env && php artisan key:generate && php artisan serve --host=0.0.0.0 --port=8001"]
+# Copy env and prepare Laravel ONLY AT RUNTIME
+CMD sh -c "cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8001"
