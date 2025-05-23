@@ -8,7 +8,9 @@
         "hot": "mix watch --hot",
         "prod": "npm run production",
         "production": "mix --production",
-        "build": "npm run production"
+        "build": "npm run production",
+        "test": "vitest",
+        "coverage": "vitest run --coverage"
     },
     "devDependencies": {
         "@vue/compiler-sfc": "^3.2.45",
