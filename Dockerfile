@@ -1,3 +1,30 @@
+# FROM laravelsail/php82-composer:latest
+
+# # Install Node.js
+# RUN apt-get update && \
+#     apt-get install -y curl unzip git && \
+#     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+#     apt-get install -y nodejs
+
+
+# WORKDIR /app
+
+# COPY . .
+
+# RUN composer install
+
+# RUN cp .env.example .env && \
+#     php artisan key:generate && \
+#     php artisan storage:link
+
+# WORKDIR /app
+# RUN npm install && npm run build
+
+# EXPOSE 8001
+
+# CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8001"]
+
+
 FROM laravelsail/php82-composer:latest
 
 # Install Node.js
@@ -6,20 +33,17 @@ RUN apt-get update && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs
 
-
 WORKDIR /app
 
 COPY . .
 
 RUN composer install
 
-RUN cp .env.example .env && \
-    php artisan key:generate && \
-    php artisan storage:link
+RUN php artisan storage:link
 
 WORKDIR /app
 RUN npm install && npm run build
 
 EXPOSE 8001
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8001"]
+CMD ["sh", "-c", "cp .env.example .env && php artisan key:generate && php artisan serve --host=0.0.0.0 --port=8001"]
