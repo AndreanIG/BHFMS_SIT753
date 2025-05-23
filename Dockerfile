@@ -13,7 +13,8 @@ COPY . .
 
 RUN composer install
 
-RUN php artisan key:generate && \
+RUN cp .env.example .env \
+    php artisan key:generate && \
     php artisan storage:link
 
 WORKDIR /app
