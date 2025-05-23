@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'bhfms-app'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                git branch: 'main', 
+                    url: 'https://github.com/AndreanIG/BHFMS_SIT753.git',
+                    credentialsId: 'github-pat'
+
+                bat "docker build -t ${DOCKER_IMAGE} ."
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat "docker run --rm ${DOCKER_IMAGE} php artisan test"
+            }
+        }
+
+        stage('Code Quality Analysis || SonarCloud Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                    bat '''
+                        IF NOT EXIST sonar-scanner-cli-5.0.1.3006-windows.zip (
+                            curl -LO https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-windows.zip
+                            tar -xf sonar-scanner-cli-5.0.1.3006-windows.zip
+                        )
+
+                        SET "SONAR_SCANNER_HOME=%CD%\\sonar-scanner-5.0.1.3006-windows"
+                        SET "PATH=%SONAR_SCANNER_HOME%\\bin;%PATH%"
+
+                        sonar-scanner.bat -D"sonar.login=%SONAR_TOKEN%"
+                    '''
+                }
+            }
+        }
+
+        stage('Security') {
+            steps {
+                bat "docker run --rm ${DOCKER_IMAGE} npm audit --json > audit-report.json || exit /b 0"
+                bat "type audit-report.json"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                bat "docker run -d -p 8001:8001 ${DOCKER_IMAGE}"
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'audit-report.json', allowEmptyArchive: true
+        }
+    }
+}
